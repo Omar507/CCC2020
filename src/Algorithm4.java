@@ -1,4 +1,5 @@
 import java.io.*;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,6 +10,7 @@ public class Algorithm4 {
     private int maxPower;
     private int maxElectricity;
     private int numberOfMinutes;
+    private Long maxTask;
     private int numberOfTasks;
 
     public void go(File file) throws IOException {
@@ -16,17 +18,20 @@ public class Algorithm4 {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             maxPower = Integer.parseInt(br.readLine());
             maxElectricity = Integer.parseInt(br.readLine());
+            maxTask = Long.parseLong(br.readLine());
 
             numberOfMinutes = Integer.parseInt(br.readLine());
 
             ArrayList<Integer> priceList = new ArrayList<>();
             ArrayList<Integer> priceUsage = new ArrayList<>();
+            ArrayList<Integer> taskLocation = new ArrayList<>();
             String line;
 
             for (int i = 0; i < numberOfMinutes; i++) {
                 line = br.readLine();
                 priceList.add(Integer.parseInt(line));
                 priceUsage.add(0);
+                taskLocation.add(0);
             }
 
             numberOfTasks = Integer.parseInt(br.readLine());
@@ -43,13 +48,13 @@ public class Algorithm4 {
 
 
             for (int i = 0; i < taskList.size(); i++) {
-                getMinForTask(taskList.get(i), priceList, priceUsage);
+                getMinForTask(taskList.get(i), priceList, priceUsage, taskLocation);
             }
-            writeFile(file, taskList, numberOfTasks);
+            writeFile(file, taskList, numberOfTasks, taskLocation);
         }
     }
 
-    private int getMinForTask(Task4 task, ArrayList<Integer> priceList, ArrayList<Integer> priceUsage) {
+    private int getMinForTask(Task4 task, ArrayList<Integer> priceList, ArrayList<Integer> priceUsage, ArrayList<Integer> taskLocation) {
         int min = Integer.MAX_VALUE;
         int remElectricity = maxElectricity;
         ArrayList<Integer> priceInInterval = new ArrayList();
@@ -60,24 +65,26 @@ public class Algorithm4 {
         int minIndex = priceInInterval.indexOf(Collections.min(priceInInterval)) + task.getStartInterval();
 
         //minute minIndex cant be used
-        if(priceUsage.get(minIndex) == maxPower){
+        if(priceUsage.get(minIndex) == maxPower || taskLocation.get(minIndex).equals(maxTask)){
             ArrayList<Integer> fakePriceList = new ArrayList<>();
             for (Integer value : priceList) {
                 fakePriceList.add(value);
             }
             fakePriceList.set(minIndex, Integer.MAX_VALUE);
-            getMinForTask(task, fakePriceList, priceUsage);
+            getMinForTask(task, fakePriceList, priceUsage, taskLocation);
         } else {
             int powerAvailableForMinute = maxPower - priceUsage.get(minIndex);
             if(task.getPower() > powerAvailableForMinute){
                 remElectricity = remElectricity - powerAvailableForMinute * priceList.get(minIndex);
                 priceUsage.set(minIndex, priceUsage.get(minIndex) + powerAvailableForMinute);
+                taskLocation.set(minIndex, taskLocation.get(minIndex) + 1);
                 Tuple tuple = new Tuple(minIndex, powerAvailableForMinute);
                 task.getConsumption().add(tuple);
                 task.setPower(task.getPower() - powerAvailableForMinute);
                 //this task still has power left
-                getMinForTask(task, priceList, priceUsage);
+                getMinForTask(task, priceList, priceUsage, taskLocation);
             } else if(task.getPower() <= powerAvailableForMinute) {
+                taskLocation.set(minIndex, taskLocation.get(minIndex) + 1);
                 remElectricity = remElectricity - task.getPower() * priceList.get(minIndex);
                 priceUsage.set(minIndex, task.getPower() + priceUsage.get(minIndex));
                 Tuple tuple = new Tuple(minIndex, task.getPower());
@@ -94,14 +101,14 @@ public class Algorithm4 {
         return minIndex;
     }
 
-    private void writeFile(File file, ArrayList<Task4> tasks, int numberOfTasks) {
+    private void writeFile(File file, ArrayList<Task4> tasks, int numberOfTasks, ArrayList<Integer> taskLocation) {
         tasks.sort(Comparator.comparing(Task4::getId));
         /**
          * Output: arrival times of the cars, separated by comma, in the order of the input (ex. "98,37,71")
          * @param cars the list of cars in order of appearance in the input file
          */
         try {
-            File outputFile = new File("src/resources/level4/" + file.getName().substring(0, file.getName().length() - 3) + ".out");
+            File outputFile = new File("src/resources/level5/" + file.getName().substring(0, file.getName().length() - 3) + ".out");
 
             // True: the file has been newly created; False: the file already existed
             if (outputFile.createNewFile()) {
