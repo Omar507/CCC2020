@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -19,7 +16,7 @@ public class Algorithm2 {
             ArrayList<Integer> priceList = new ArrayList<>();
             String line;
 
-            for(int i = 0; i < numberOfMinutes; i++){
+            for (int i = 0; i < numberOfMinutes; i++) {
                 line = br.readLine();
                 priceList.add(Integer.parseInt(line));
             }
@@ -28,60 +25,70 @@ public class Algorithm2 {
 
             ArrayList<Task> taskList = new ArrayList<>();
 
-            for(int i = 0; i < numberOfTasks; i++){
+            for (int i = 0; i < numberOfTasks; i++) {
                 line = br.readLine();
                 String[] tokens = line.split(" ");
                 taskList.add(new Task(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1])));
             }
 
 
-//            param n = Anzahl der Stromwerte
-//            param d = Dauer der Aufgabe
-//
-//            int min = infinity aka. Integer.max();
-//            int minIndex = infinty
-//
-//
-//            for i = 0 to n-d {
-//                int sum = 0;
-//                for j = 0 to d {
-//                    sum += Stromwerte[j]
-//                }
-//
-//                if( sum < min ) {
-//                    min = sum;
-//                    minIndex = i;
-//                }
-//
-//            }
-
-            for(int i = 0; i < taskList.size(); i++){
+            for (int i = 0; i < taskList.size(); i++) {
                 getMinForTask(taskList.get(i), priceList);
             }
 
-            for(int i = 0; i < taskList.size(); i++){
+            for (int i = 0; i < taskList.size(); i++) {
                 System.out.print(taskList.get(i).getId() + " ");
                 System.out.println(taskList.get(i).getStartId());
             }
+            writeFile(file, taskList);
 
-            System.out.println("File: " + file.getName());
-            int minIndex = priceList.indexOf(Collections.min(priceList));
-//            System.out.println("Min is: " + minIndex);
         }
     }
 
     private int getMinForTask(Task task, ArrayList<Integer> priceList) {
         int min = Integer.MAX_VALUE;
-        for(int i = 0; i < priceList.size() - task.getCompletionTime() + 1; i++){
+        for (int i = 0; i < priceList.size() - task.getCompletionTime() + 1; i++) {
             int sum = 0;
-            for (int j = i; j < task.getCompletionTime() + i; j++){
+            for (int j = i; j < task.getCompletionTime() + i; j++) {
                 sum += priceList.get(j);
             }
-            if(sum < min){
+            if (sum < min) {
                 min = sum;
                 task.setStartId(i);
             }
         }
         return task.getStartId();
+    }
+
+    private void writeFile(File file, ArrayList<Task> tasks) {
+        /**
+         * Output: arrival times of the cars, separated by comma, in the order of the input (ex. "98,37,71")
+         * @param cars the list of cars in order of appearance in the input file
+         */
+        try {
+            File outputFile = new File("src/resources/level2/" + file.getName().substring(0, file.getName().length() - 3) + ".out");
+
+            // True: the file has been newly created; False: the file already existed
+            if (outputFile.createNewFile()) {
+                System.out.println("Output file created at " + outputFile.getAbsolutePath());
+            } else {
+                System.out.println("Writing output to " + outputFile.getAbsolutePath());
+            }
+
+            String outputString = "";
+            for (Task task : tasks) {
+                outputString += String.valueOf(task.getId()) + " " + String.valueOf(task.getStartId()) + "\n";
+            }
+
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
+            bw.write(outputString);
+            bw.close();
+            System.out.println(outputString);
+
+        } catch (IOException e) {
+            System.out.println("ERROR: Something went wrong creating / writing to the output file");
+            e.printStackTrace();
+        }
     }
 }
