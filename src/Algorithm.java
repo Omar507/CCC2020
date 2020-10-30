@@ -10,8 +10,6 @@ public class Algorithm {
     private int numberOfMinutes;
 
     public void go(File file) throws IOException {
-
-
         // Read input file
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             numberOfMinutes = Integer.parseInt(br.readLine());
