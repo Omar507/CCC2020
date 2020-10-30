@@ -56,7 +56,7 @@ public class Algorithm2 {
 //            }
 
             for(int i = 0; i < taskList.size(); i++){
-                getMinForTask(taskList.get(0), priceList);
+                getMinForTask(taskList.get(i), priceList);
             }
 
             for(int i = 0; i < taskList.size(); i++){
@@ -72,9 +72,9 @@ public class Algorithm2 {
 
     private int getMinForTask(Task task, ArrayList<Integer> priceList) {
         int min = Integer.MAX_VALUE;
-        for(int i = 0; i < priceList.size() - task.getCompletionTime() + 1; i++){
+        for(int i = 0; i < priceList.size() - task.getCompletionTime(); i++){
             int sum = 0;
-            for (int j = i; j < task.getCompletionTime() + 1; j++){
+            for (int j = i; j < task.getCompletionTime(); j++){
                 sum += priceList.get(j);
             }
             if(sum < min){
