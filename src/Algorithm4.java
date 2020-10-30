@@ -71,7 +71,7 @@ public class Algorithm4 {
             int powerAvailableForMinute = maxPower - priceUsage.get(minIndex);
             if(task.getPower() > powerAvailableForMinute){
                 remElectricity = remElectricity - powerAvailableForMinute * priceList.get(minIndex);
-                priceUsage.set(minIndex, powerAvailableForMinute);
+                priceUsage.set(minIndex, priceUsage.get(minIndex) + powerAvailableForMinute);
                 Tuple tuple = new Tuple(minIndex, powerAvailableForMinute);
                 task.getConsumption().add(tuple);
                 task.setPower(task.getPower() - powerAvailableForMinute);
