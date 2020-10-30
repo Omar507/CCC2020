@@ -48,10 +48,10 @@ public class Algorithm3 {
     private int getMinForTask(Task3 task, ArrayList<Integer> priceList) {
         int min = Integer.MAX_VALUE;
         ArrayList<Integer> priceInInterval = new ArrayList();
-        for (int i = task.getStartInterval(); i < task.getEndInterval(); i++) {
+        for (int i = task.getStartInterval(); i < task.getEndInterval() + 1; i++) {
             priceInInterval.add(priceList.get(i));
         }
-        int minIndex = priceInInterval.indexOf(Collections.min(priceInInterval));
+        int minIndex = priceInInterval.indexOf(Collections.min(priceInInterval)) + task.getStartInterval();
         task.setMinute(minIndex);
         return minIndex;
     }
@@ -62,7 +62,7 @@ public class Algorithm3 {
          * @param cars the list of cars in order of appearance in the input file
          */
         try {
-            File outputFile = new File("src/resources/level2/" + file.getName().substring(0, file.getName().length() - 3) + ".out");
+            File outputFile = new File("src/resources/level3/" + file.getName().substring(0, file.getName().length() - 3) + ".out");
 
             // True: the file has been newly created; False: the file already existed
             if (outputFile.createNewFile()) {
