@@ -40,7 +40,7 @@ public class Algorithm2 {
                 System.out.print(taskList.get(i).getId() + " ");
                 System.out.println(taskList.get(i).getStartId());
             }
-            writeFile(file, taskList);
+            writeFile(file, taskList, numberOfTasks);
 
         }
     }
@@ -60,7 +60,7 @@ public class Algorithm2 {
         return task.getStartId();
     }
 
-    private void writeFile(File file, ArrayList<Task> tasks) {
+    private void writeFile(File file, ArrayList<Task> tasks, int numberOfTasks) {
         /**
          * Output: arrival times of the cars, separated by comma, in the order of the input (ex. "98,37,71")
          * @param cars the list of cars in order of appearance in the input file
@@ -76,6 +76,9 @@ public class Algorithm2 {
             }
 
             String outputString = "";
+
+            outputString += numberOfTasks + "\n";
+
             for (Task task : tasks) {
                 outputString += String.valueOf(task.getId()) + " " + String.valueOf(task.getStartId()) + "\n";
             }
