@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 @SuppressWarnings("Duplicates")
 public class Algorithm4 {
@@ -40,6 +41,7 @@ public class Algorithm4 {
 
             Collections.sort(taskList);
 
+
             for (int i = 0; i < taskList.size(); i++) {
                 getMinForTask(taskList.get(i), priceList, priceUsage);
             }
@@ -57,29 +59,43 @@ public class Algorithm4 {
 
         int minIndex = priceInInterval.indexOf(Collections.min(priceInInterval)) + task.getStartInterval();
 
-        if(task.getPower() >= maxPower){
-            remElectricity = remElectricity - maxPower * priceList.get(minIndex);
-            priceUsage.set(minIndex, task.getPower());
-            task.setPower(task.getPower() - maxPower);
-        } else if(task.getPower() < maxPower) {
-            remElectricity = remElectricity - maxPower * priceList.get(minIndex);
-            priceUsage.set(minIndex, task.getPower());
-            task.setPower(0);
+        //minute minIndex cant be used
+        if(priceUsage.get(minIndex) == maxPower){
+            ArrayList<Integer> fakePriceList = new ArrayList<>();
+            for (Integer value : priceList) {
+                fakePriceList.add(value);
+            }
+            fakePriceList.set(minIndex, Integer.MAX_VALUE);
+            getMinForTask(task, fakePriceList, priceUsage);
+        } else {
+            int powerAvailableForMinute = maxPower - priceUsage.get(minIndex);
+            if(task.getPower() > powerAvailableForMinute){
+                remElectricity = remElectricity - powerAvailableForMinute * priceList.get(minIndex);
+                priceUsage.set(minIndex, powerAvailableForMinute);
+                Tuple tuple = new Tuple(minIndex, powerAvailableForMinute);
+                task.getConsumption().add(tuple);
+                task.setPower(task.getPower() - powerAvailableForMinute);
+                //this task still has power left
+                getMinForTask(task, priceList, priceUsage);
+            } else if(task.getPower() <= powerAvailableForMinute) {
+                remElectricity = remElectricity - task.getPower() * priceList.get(minIndex);
+                priceUsage.set(minIndex, task.getPower());
+                Tuple tuple = new Tuple(minIndex, task.getPower());
+                task.getConsumption().add(tuple);
+                task.setPower(0);
+            }
+
+            if(remElectricity < 0){
+                System.out.println("Something went wrong!!! Remaining Electricity is negative!!!");
+            } else {
+                maxElectricity = remElectricity;
+            }
         }
-
-
-        for(int j = 0; j < task.getPower(); j++){
-
-        }
-
-        System.out.println(minIndex);
-        System.out.println(priceList.get(minIndex));
-
-//        task.setMinute(minIndex);
         return minIndex;
     }
 
     private void writeFile(File file, ArrayList<Task4> tasks, int numberOfTasks) {
+        tasks.sort(Comparator.comparing(Task4::getId));
         /**
          * Output: arrival times of the cars, separated by comma, in the order of the input (ex. "98,37,71")
          * @param cars the list of cars in order of appearance in the input file
@@ -99,7 +115,7 @@ public class Algorithm4 {
             outputString += numberOfTasks + "\n";
 
             for (Task4 task : tasks) {
-//                outputString += String.valueOf(task.getId()) + " " + String.valueOf(task.getMinute()) + " " + String.valueOf(task.getPower()) +"\n";
+                outputString += String.valueOf(task.toString());
             }
 
 

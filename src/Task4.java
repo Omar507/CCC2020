@@ -13,6 +13,7 @@ public class Task4 implements Comparable<Task4> {
         this.power = power;
         this.startInterval = startInterval;
         this.endInterval = endInterval;
+        consumption = new ArrayList<>();
     }
 
 
@@ -54,6 +55,16 @@ public class Task4 implements Comparable<Task4> {
 
     public void setConsumption(ArrayList<Tuple> consumption) {
         this.consumption = consumption;
+    }
+
+    @Override
+    public String toString(){
+        String solution = "";
+        for (Tuple tuple : consumption){
+            solution += tuple.getMinute() + " " + tuple.getPower() + " ";
+        }
+        solution = solution.substring(0, solution.length() - 1);
+        return this.getId() + " " + solution +"\n";
     }
 
     @Override
