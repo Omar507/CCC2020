@@ -18,7 +18,7 @@ public class Algorithm4 {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             maxPower = Integer.parseInt(br.readLine());
             maxElectricity = Integer.parseInt(br.readLine());
-            maxTask = Long.parseLong(br.readLine());
+            maxTask = Long.parseLong(br.readLine()  );
 
             numberOfMinutes = Integer.parseInt(br.readLine());
 
